@@ -1,0 +1,225 @@
+package gt.edu.usac.compiler;
+import java_cup.runtime.*;
+%%
+
+%class IdLexer
+%state STRING
+%state COMMENT
+%state LINECOMMENT
+%cup
+%public
+%line
+%column
+
+%{
+    StringBuilder string = new StringBuilder();
+    private Symbol symbol(int type){
+        return new Symbol(type, yyline, yycolumn);    
+    }
+    private Symbol symbol(int type, Object value){
+        return new Symbol (type,yyline,yycolumn,value);    
+    }
+%}
+
+
+finDeLinea = \r|\n|\r\n
+cualquierCaracter = [^\r\n]
+whitespace = {finDeLinea}|[ \t\f]
+comentarioTradicional  = "/*" [^*] ~"*/" | "/*" "*"+ "*/"
+comentarioDeLinea     = "//" {cualquierCaracter}* {finDeLinea}?
+comentario = {comentarioTradicional} | {comentarioDeLinea}
+letter = [a-zA-Z]
+digit = [0-9]
+identifier = {letter}+({letter}|{digit}|"-"|"_")*
+
+INT = "int"
+LONG = "long" 
+FLOAT = "float"
+DOUBLE = "double"
+DECIMAL = "decimal"
+STRING = "string"
+CHAR = "char"
+BOOL = "bool"
+PLUS = "+"
+MINUS = "-"
+TIMES = "*" 
+DIV = "/"
+EQUAL = "=="
+ASIGN = "="
+NOTEQUAL = "!="
+NOT = "!"
+LET = "<="
+LGT = ">=" 
+LT = "<"
+GT = ">"
+AND = "&&"
+OR = "||"
+WHILE = "while"
+DO = "Do"
+FOR = "for"
+FOREACH = "foreach"
+CONTINUE = "continue"
+BREAK = "Break"
+IN = "In"
+OBJECT = "object"
+CLASS = "class"
+SWITCH = "switch"
+CASE = "case"
+DEFAULT = "default"
+TRY = "try"
+CATCH = "catch"
+FINALLY = "Finally"
+PRIVATE = "private"
+NAMESPACE = "namespace"
+PUBLIC = "public"
+PROTECTED = "Protected"
+RETURN = "return"
+NULL = "null"
+IF = "if"
+ELSE = "else"
+TRUE = "true"
+FALSE = "false"
+GET = "get"
+VOID = "void"
+TYPEOF = "typeof"
+INTERFACE = "interface"
+OVERRIDE = "override"
+STRUCT = "struct"
+THROW = "throw" 
+REF = "ref"
+ENUM = "enum"
+CONST = "const"
+STATIC = "static"
+THIS = "this"
+IS = "is"
+NEW = "new"
+USING = "using"
+
+%eofval{
+
+
+    switch(zzLexicalState) {
+        case YYINITIAL:
+        /* nada */
+        break;
+    }
+    return new Symbol(ParserSym.EOF);
+%eofval}
+%%
+
+<YYINITIAL>{
+
+\"              {string.setLength(0);yybegin(STRING);}
+"/*"            {yybegin(COMMENT);}
+"//"            {yybegin(LINECOMMENT);}
+}
+
+<STRING> {
+      \"                             { yybegin(YYINITIAL);
+                                       return new Symbol(ParserSym.stringValue,yyline,yycolumn,string.toString());}
+      [^\n\r\"\\]+                   { string.append(yytext()); }
+      \\t                            { string.append('\t'); }
+      \\n                            { string.append('\n'); }
+      \\f                            { string.append('\f'); }
+      \\r                            { string.append('\r'); }
+      \\\"                           { string.append('\"'); }
+      \\                             { string.append('\\'); }
+      \\0                            {yybegin(YYINITIAL);
+                                        return new Symbol(ParserSym.ERROR,yyline,yycolumn,"Contiene caracter nulo");}//ERROR de caracter nulo
+      
+      {finDeLinea}                           {yybegin(YYINITIAL);
+                                       return new Symbol(ParserSym.ERROR,yyline,yycolumn,"UNTERMINATED STRING CONSTANT");}
+}
+
+<COMMENT>{
+    [^*] ~"*/"  {/*NADA DE NADA*/}
+    "*"+ "*/"   {/*NADA DE NADA*/}
+}
+
+<LINECOMMENT>{
+{cualquierCaracter}* {finDeLinea}?  {/*Absolutamente nada*/}
+}
+
+"("   {return new Symbol(ParserSym.LPAREN,yyline,yycolumn,yytext());}
+")"   {return new Symbol(ParserSym.RPAREN,yyline,yycolumn,yytext());}
+","   {return new Symbol(ParserSym.COMMA,yyline,yycolumn,yytext());}
+";"   {return new Symbol(ParserSym.SEMI,yyline,yycolumn,yytext());}
+"."   {return new Symbol(ParserSym.DOT,yyline,yycolumn,yytext());}
+":"   {return new Symbol(ParserSym.COLON,yyline,yycolumn,yytext());}
+"{"   {return new Symbol(ParserSym.LBRACE,yyline,yycolumn,yytext());}
+"}"   {return new Symbol(ParserSym.RBRACE,yyline,yycolumn,yytext());}
+"["   {return new Symbol(ParserSym.LBRACKET,yyline,yycolumn,yytext());}
+"]"   {return new Symbol(ParserSym.RBRACKET,yyline,yycolumn,yytext());}
+"~"   {return new Symbol(ParserSym.NEG,yyline,yycolumn,yytext());}
+"@"   {return new Symbol(ParserSym.AT,yyline,yycolumn,yytext());}
+"%"   {return new Symbol(ParserSym.MOD,yyline,yycolumn,yytext());}
+"*/"   {return new Symbol(ParserSym.ERROR,yyline,yycolumn,"unmatched comment finisher");}
+{INT} {return new Symbol(ParserSym.INT,yyline,yycolumn,yytext());}
+{LONG} {return new Symbol(ParserSym.LONG,yyline,yycolumn,yytext());}
+{FLOAT} {return new Symbol(ParserSym.FLOAT,yyline,yycolumn,yytext());}
+{DOUBLE} {return new Symbol(ParserSym.DOUBLE,yyline,yycolumn,yytext());}
+{DECIMAL} {return new Symbol(ParserSym.DECIMAL,yyline,yycolumn,yytext());}
+{STRING} {return new Symbol(ParserSym.STRING,yyline,yycolumn,yytext());}
+{CHAR} {return new Symbol(ParserSym.CHAR,yyline,yycolumn,yytext());}
+{BOOL} {return new Symbol(ParserSym.BOOL,yyline,yycolumn,yytext());}
+{PLUS} {return new Symbol(ParserSym.PLUS,yyline,yycolumn,yytext());}
+{MINUS} {return new Symbol(ParserSym.MINUS,yyline,yycolumn,yytext());}
+{TIMES} {return new Symbol(ParserSym.TIMES,yyline,yycolumn,yytext());}
+{DIV} {return new Symbol(ParserSym.DIV,yyline,yycolumn,yytext());}
+{ASIGN} {return new Symbol(ParserSym.ASIGN,yyline,yycolumn,yytext());}
+{EQUAL} {return new Symbol(ParserSym.EQUAL,yyline,yycolumn,yytext());}
+{NOTEQUAL} {return new Symbol(ParserSym.NOTEQUAL,yyline,yycolumn,yytext());}
+{NOT} {return new Symbol(ParserSym.NOT,yyline,yycolumn,yytext());}
+{LT} {return new Symbol(ParserSym.LT,yyline,yycolumn,yytext());}
+{GT} {return new Symbol(ParserSym.GT,yyline,yycolumn,yytext());}
+{LET} {return new Symbol(ParserSym.LET,yyline,yycolumn,yytext());}
+{LGT} {return new Symbol(ParserSym.LGT,yyline,yycolumn,yytext());}
+{AND} {return new Symbol(ParserSym.AND,yyline,yycolumn,yytext());}
+{OR} {return new Symbol(ParserSym.OR,yyline,yycolumn,yytext());}
+{WHILE} {return new Symbol(ParserSym.WHILE,yyline,yycolumn,yytext());}
+{DO} {return new Symbol(ParserSym.DO,yyline,yycolumn,yytext());}
+{FOR} {return new Symbol(ParserSym.FOR,yyline,yycolumn,yytext());}
+{FOREACH} {return new Symbol(ParserSym.FOREACH,yyline,yycolumn,yytext());}
+{CONTINUE} {return new Symbol(ParserSym.CONTINUE,yyline,yycolumn,yytext());}
+{BREAK} {return new Symbol(ParserSym.BREAK,yyline,yycolumn,yytext());}
+{IN} {return new Symbol(ParserSym.IN,yyline,yycolumn,yytext());}
+{OBJECT} {return new Symbol(ParserSym.OBJECT,yyline,yycolumn,yytext());}
+{CLASS} {return new Symbol(ParserSym.CLASS,yyline,yycolumn,yytext());}
+{SWITCH} {return new Symbol(ParserSym.SWITCH,yyline,yycolumn,yytext());}
+{CASE} {return new Symbol(ParserSym.CASE,yyline,yycolumn,yytext());}
+{DEFAULT} {return new Symbol(ParserSym.DEFAULT,yyline,yycolumn,yytext());}
+{TRY} {return new Symbol(ParserSym.TRY,yyline,yycolumn,yytext());}
+{CATCH} {return new Symbol(ParserSym.CATCH,yyline,yycolumn,yytext());}
+{FINALLY} {return new Symbol(ParserSym.FINALLY,yyline,yycolumn,yytext());}
+{PRIVATE} {return new Symbol(ParserSym.PRIVATE,yyline,yycolumn,yytext());}
+{NAMESPACE} {return new Symbol(ParserSym.NAMESPACE,yyline,yycolumn,yytext());}
+{PUBLIC} {return new Symbol(ParserSym.PUBLIC,yyline,yycolumn,yytext());}
+{PROTECTED} {return new Symbol(ParserSym.PROTECTED,yyline,yycolumn,yytext());}
+{RETURN} {return new Symbol(ParserSym.RETURN,yyline,yycolumn,yytext());}
+{NULL} {return new Symbol(ParserSym.NULL,yyline,yycolumn,yytext());}
+{IF} {return new Symbol(ParserSym.IF,yyline,yycolumn,yytext());}
+{ELSE} {return new Symbol(ParserSym.ELSE,yyline,yycolumn,yytext());}
+{TRUE} {return new Symbol(ParserSym.TRUE,yyline,yycolumn,yytext());}
+{FALSE} {return new Symbol(ParserSym.FALSE,yyline,yycolumn,yytext());}
+{GET} {return new Symbol(ParserSym.GET,yyline,yycolumn,yytext());}
+{VOID} {return new Symbol(ParserSym.VOID,yyline,yycolumn,yytext());}
+{TYPEOF} {return new Symbol(ParserSym.TYPEOF,yyline,yycolumn,yytext());}
+{INTERFACE} {return new Symbol(ParserSym.INTERFACE,yyline,yycolumn,yytext());}
+{OVERRIDE} {return new Symbol(ParserSym.OVERRIDE,yyline,yycolumn,yytext());}
+{STRUCT} {return new Symbol(ParserSym.STRUCT,yyline,yycolumn,yytext());}
+{THROW} {return new Symbol(ParserSym.THROW,yyline,yycolumn,yytext());}
+{REF} {return new Symbol(ParserSym.REF,yyline,yycolumn,yytext());}
+{ENUM} {return new Symbol(ParserSym.ENUM,yyline,yycolumn,yytext());}
+{CONST} {return new Symbol(ParserSym.CONST,yyline,yycolumn,yytext());}
+{STATIC} {return new Symbol(ParserSym.STATIC,yyline,yycolumn,yytext());}
+{THIS} {return new Symbol(ParserSym.THIS,yyline,yycolumn,yytext());}
+{IS} {return new Symbol(ParserSym.IS,yyline,yycolumn,yytext());}
+{NEW} {return new Symbol(ParserSym.NEW,yyline,yycolumn,yytext());}
+{USING} {return new Symbol(ParserSym.USING,yyline,yycolumn,yytext());}
+{digit}+"."{digit}+ {return new Symbol(ParserSym.doubleValue,yyline,yycolumn,yytext());}
+{digit}+ {return new Symbol(ParserSym.intValue,yyline,yycolumn,yytext());}
+{identifier} {return new Symbol(ParserSym.identifier,yyline,yycolumn,yytext());}
+"\'"{letter}"\'" {return new Symbol(ParserSym.charValue,yyline,yycolumn,yytext());}
+{whitespace} {/*Nothing at all*/}
+{comentario} {/*Nothing at all*/}
+[^]         {return new Symbol(ParserSym.ERROR,yyline,yycolumn, yytext());}

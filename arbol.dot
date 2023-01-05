@@ -1,0 +1,822 @@
+digraph G
+{
+graph [pad="0.5", nodesep="1", ranksep="2"]node[shape = rectangle] 
+node[style = filled] 
+node[fillcolor = "#41e06c"]
+node[color="#9ce03d"] 
+edge[color="#a66c4b"] 
+<RAIZ> -> id10
+id10
+id10->140
+id10->141
+id10->142
+id10->143
+142->id2
+id2->id144
+id2->id145
+id2[label = "Parametro"];
+id144[label = "INT"];
+id145[label = "n1"];
+
+142->id4
+id4->id146
+id4->id147
+id4[label = "Parametro"];
+id146[label = "INT"];
+id147[label = "n2"];
+
+142[label = "Parametros"];
+143->id6
+id6->id149
+id149[label ="n3"];
+id6->id148
+id6[label ="Declaracion"];
+
+143->id7->id150
+id7->id151
+id7[label="Asignacion"];
+id150[label="n3"];
+id151[label="0.0"];
+
+143->id8
+id8->id152
+id8[label ="Return"];
+id152[label ="0.0"];
+
+143[label = "Expresiones"];
+id10[label = "Funcion"];
+140[label = "Tipo: INT"];
+141[label = "Nombre: sumar"];
+
+<RAIZ> -> id19
+id19
+id19->153
+id19->154
+id19->155
+id19->156
+155->id12
+id12->id157
+id12->id158
+id12[label = "Parametro"];
+id157[label = "INT"];
+id158[label = "num1"];
+
+155->id14
+id14->id159
+id14->id160
+id14[label = "Parametro"];
+id159[label = "INT"];
+id160[label = "num2"];
+
+155[label = "Parametros"];
+156->id15
+id15->id161
+id161[label ="Aquí puede venir cualquier sentencia: D"];
+id15[label ="WRITELINE"];
+
+156->id16
+id16->id162
+id16[label ="Return"];
+id162[label ="0.0"];
+
+156->id17
+id17->id163
+id163[label ="Aquí pueden venir más sentencias, pero no se ejecutarán
+  por la sentencia RETURN D:"];
+id17[label ="WRITELINE"];
+
+156[label = "Expresiones"];
+id19[label = "Funcion"];
+153[label = "Tipo: INT"];
+154[label = "Nombre: suma"];
+
+<RAIZ> -> id29
+id29
+id29->164
+id29->165
+id29->166
+id29->167
+166->id21
+id21->id168
+id21->id169
+id21[label = "Parametro"];
+id168[label = "DOUBLE"];
+id169[label = "pies"];
+
+166->id23
+id23->id170
+id23->id171
+id23[label = "Parametro"];
+id170[label = "STRING"];
+id171[label = "tipo"];
+
+166[label = "Parametros"];
+167->id27
+id27[label = "If"];
+id27->id172
+id172->id24
+id24[label ="Condicion"];
+id24->id185
+id185[label ="0.0"];
+id24->id184
+id184[label ="=="];
+id24->id186
+id186[label ="metro"];
+
+id172[label = "Condiciones"];
+id27->id173
+id173->id25
+id25->id190
+id25[label ="Return"];
+id190[label ="0.0"];
+
+id173[label = "Expresiones"];
+id27->id175
+id175->id26
+id26->id193
+id26[label ="Return"];
+id193[label ="-1.0"];
+
+id175[label = "Else"];
+
+167[label = "Expresiones"];
+id29[label = "Funcion"];
+164[label = "Tipo: DOUBLE"];
+165[label = "Nombre: conversion"];
+
+<RAIZ> -> id32
+id32
+id32->194
+id32->195
+id32->196
+id32->197
+197->id30
+id30->id198
+id198[label ="Hola mundo"];
+id30[label ="WRITELINE"];
+
+197[label = "Expresiones"];
+id32[label = "Funcion"];
+194[label = "Tipo: VOID"];
+195[label = "Nombre: holamundo"];
+
+<RAIZ> -> id34
+id34
+id34->id200
+id200[label ="incremental"];
+id34->id199
+id34[label ="Declaracion"];
+id199[label ="1.0"];
+
+<RAIZ> -> id35
+id35
+id35->id201
+id201[label ="El incremental es : "];
+id35->id202
+id202[label ="1.0"];
+id35[label ="WRITELINE"];
+
+<RAIZ> -> id36
+id36->id203
+id36->id204
+id36[label="Asignacion"];
+id203[label="incremental"];
+id204[label="2.0"];
+
+<RAIZ> -> id37
+id37->id205
+id37->id206
+id37[label="Asignacion"];
+id205[label="incremental"];
+id206[label="1.0"];
+
+<RAIZ> -> id39
+id39
+id39->id208
+id208[label ="edad"];
+id39->id207
+id39[label ="Declaracion"];
+id207[label ="18.0"];
+
+<RAIZ> -> id40
+id40->id209
+id40->id210
+id40[label="Asignacion"];
+id209[label="edad"];
+id210[label="19.0"];
+
+<RAIZ> -> id41
+id41->id211
+id41->id212
+id41[label="Asignacion"];
+id211[label="edad"];
+id212[label="18.0"];
+
+<RAIZ> -> id43
+id43
+id43->id214
+id214[label ="anio"];
+id43->id213
+id43[label ="Declaracion"];
+id213[label ="2023.0"];
+
+<RAIZ> -> id44
+id44
+id44->id215
+id215[label ="EDAD: "];
+id44->id216
+id216[label ="18.0"];
+id44[label ="WRITELINE"];
+
+<RAIZ> -> id45
+id45
+id45->id217
+id217[label ="ANIO: "];
+id45->id218
+id218[label ="2023.0"];
+id45[label ="WRITELINE"];
+
+<RAIZ> -> id47
+id47
+id47->id220
+id220[label ="a"];
+id47->id219
+id47[label ="Declaracion"];
+id219[label ="1.0"];
+
+<RAIZ> -> id49
+id49
+id49->id222
+id222[label ="b"];
+id49->id221
+id49[label ="Declaracion"];
+id221[label ="2.0"];
+
+<RAIZ> -> id51
+id51
+id51->id224
+id224[label ="c"];
+id51->id223
+id51[label ="Declaracion"];
+id223[label ="true"];
+
+<RAIZ> -> id65
+id65
+id65[label = "If"];
+id65->id225
+id225->id52
+id52[label ="Condicion"];
+
+id225[label = "Condiciones"];
+id65->id226
+id226->id64
+id64[label = "If"];
+id64->id963
+id963->id53
+id53[label ="Condicion"];
+
+id963[label = "Condiciones"];
+id64->id964
+id964->id63
+id63[label = "If"];
+id63->id1209
+id1209->id54
+id54[label ="Condicion"];
+
+id1209[label = "Condiciones"];
+id63->id1210
+id1210->id56
+id56->id1236
+id1236[label ="d"];
+id56->id1237
+id1237[label ="e"];
+id56->id1238
+id1238[label ="f"];
+id56->id1239
+id1239[label ="g"];
+id56->id1235
+id56[label ="Declaracion"];
+id1235[label ="10.0"];
+
+id1210->id60
+id60[label = "If"];
+id60->id1290
+id1290->id57
+id57[label ="Condicion"];
+
+id1290[label = "Condiciones"];
+id60->id1291
+id1291->id58
+id58->id1308
+id1308[label ="Debe imprimir esto aunque sea falso"];
+id58[label ="WRITELINE"];
+
+id1291[label = "Expresiones"];
+id60->id1293
+id1293->id59
+id59->id1313
+id1313[label ="Funciona la declaración multiple: "];
+id59->id1314
+id1314[label ="si"];
+id59[label ="WRITELINE"];
+
+id1293[label = "Else"];
+
+id1210->id61
+id61->id1319
+id1319[label ="Tu nota del archivo sencillo es: "];
+id61->id1320
+id1320[label ="10.0"];
+id61[label ="WRITELINE"];
+
+id1210->id62
+id62->id1323
+id1323[label ="Si y solo si d , e, f tienen 10 en la tabla de simbolos, de lo contrario tienes 5"];
+id62[label ="WRITELINE"];
+
+id1210[label = "Expresiones"];
+
+id964[label = "Expresiones"];
+
+id226[label = "Expresiones"];
+
+<RAIZ> -> id67
+id67
+id67->id1325
+id1325[label ="x"];
+id67->id1324
+id67[label ="Declaracion"];
+id1324[label ="80.0"];
+
+<RAIZ> -> id79
+id79
+id79[label = "If"];
+id79->id1326
+id1326->id68
+id68[label ="Condicion"];
+id68->id1339
+id1339[label ="80.0"];
+id68->id1338
+id1338[label =">"];
+id68->id1340
+id1340[label ="50.0"];
+
+id1326[label = "Condiciones"];
+id79->id1327
+id1327->id69
+id69->id1344
+id1344[label ="Mayor que 50"];
+id69[label ="WRITELINE"];
+
+id1327[label = "Expresiones"];
+id79->id1328
+id1328->id78
+id78[label = "If"];
+id78->id1545
+id1545->id70
+id70[label ="Condicion"];
+id70->id1558
+id1558[label ="80.0"];
+id70->id1557
+id1557[label ="<="];
+id70->id1559
+id1559[label ="50.0"];
+
+id1545->id71
+id71[label ="Condicion"];
+id71->id1572
+id1572[label ="&&"];
+id71->id1570
+id1570[label ="80.0"];
+id71->id1569
+id1569[label =">"];
+id71->id1571
+id1571[label ="0.0"];
+
+id1545[label = "Condiciones"];
+id78->id1546
+id1546->id72
+id72->id1575
+id1575[label ="Menor que 50"];
+id72[label ="WRITELINE"];
+
+id1546->id76
+id76[label = "If"];
+id76->id1620
+id1620->id73
+id73[label ="Condicion"];
+id73->id1633
+id1633[label ="80.0"];
+id73->id1632
+id1632[label =">"];
+id73->id1634
+id1634[label ="25.0"];
+
+id1620[label = "Condiciones"];
+id76->id1621
+id1621->id74
+id74->id1638
+id1638[label ="Número mayor que 25"];
+id74[label ="WRITELINE"];
+
+id1621[label = "Expresiones"];
+id76->id1623
+id1623->id75
+id75->id1641
+id1641[label ="Número menor que 25"];
+id75[label ="WRITELINE"];
+
+id1623[label = "Else"];
+
+id1546[label = "Expresiones"];
+id78->id1548
+id1548->id77
+id77->id1644
+id1644[label ="Número negativo"];
+id77[label ="WRITELINE"];
+
+id1548[label = "Else"];
+
+id1328[label = "Else"];
+
+<RAIZ> -> id81
+id81
+id81->id1646
+id1646[label ="_edad"];
+id81->id1645
+id81[label ="Declaracion"];
+id1645[label ="18.0"];
+
+<RAIZ> -> id89
+id89
+id89[label ="Switch"];
+id89->id1647
+id1647[label ="Condicion: _edad"];
+id89->id1648
+id1648[label ="Casos"];
+id1648->id83
+id83->id1651
+id1651[label =" Valor: 10.0"];
+id83->id1650
+id1650->id82
+id82->id1654
+id1654[label ="Tengo 10 anios."];
+id82[label ="WRITELINE"];
+
+id1650[label ="Expresiones"];
+id83[label ="Case"];
+
+id1648->id85
+id85->id1656
+id1656[label =" Valor: 18.0"];
+id85->id1655
+id1655->id84
+id84->id1659
+id1659[label ="Tengo 18 anios."];
+id84[label ="WRITELINE"];
+
+id1655[label ="Expresiones"];
+id85[label ="Case"];
+
+id1648->id87
+id87->id1661
+id1661[label =" Valor: 25.0"];
+id87->id1660
+id1660->id86
+id86->id1664
+id1664[label ="Tengo 25 anios."];
+id86[label ="WRITELINE"];
+
+id1660[label ="Expresiones"];
+id87[label ="Case"];
+
+id89->id1649
+id1649->id88
+id88->id1667
+id1667[label ="No se que edad tengo. :("];
+id88[label ="WRITELINE"];
+
+id1649[label ="Default"];
+
+<RAIZ> -> id96
+id96
+id96->id1668
+id1668->id94
+id94[label = "If"];
+id94->id1714
+id1714->id91
+id91[label ="Condicion"];
+id91->id1727
+id1727[label ="80.0"];
+id91->id1726
+id1726[label =">"];
+id91->id1728
+id1728[label ="50.0"];
+
+id1714[label = "Condiciones"];
+id94->id1715
+id1715->id92
+id92->id1732
+id1732[label ="Mayor que 50"];
+id92[label ="WRITELINE"];
+
+id1715[label = "Expresiones"];
+id94->id1717
+id1717->id93
+id93->id1735
+id1735[label ="Menor que 100"];
+id93[label ="WRITELINE"];
+
+id1717[label = "Else"];
+
+id1668->id95->id1740
+id95->id1741
+id95[label="Asignacion"];
+id1740[label="x"];
+id1741[label="81.0"];
+
+id1668[label ="Expresiones"];
+id96->id1669
+id1669->id90
+id90[label ="Condicion"];
+id90->id1751
+id1751[label ="80.0"];
+id90->id1750
+id1750[label ="<"];
+id90->id1752
+id1752[label ="100.0"];
+
+id1669[label = "Condiciones"];
+id96[label ="WHILE"];
+
+<RAIZ> -> id100
+id100
+id100->id101
+id101->id98
+id98->id1757
+id1757[label ="i"];
+id98->id1756
+id98[label ="Declaracion"];
+id1756[label ="0.0"];
+
+id101->id97
+id97[label ="Condicion"];
+id97->id1759
+id1759[label ="0.0"];
+id97->id1758
+id1758[label ="<"];
+id97->id1760
+id1760[label ="3.0"];
+
+id1755[label ="++"];
+id101->id1755
+id101[label ="Condicion Ciclo"];
+
+id100->id1754
+id100[label ="For"];
+id1754->id99
+id99->id1766
+id1766[label ="i ="];
+id99->id1767
+id1767[label ="0.0"];
+id99[label ="WRITELINE"];
+
+id1754[label ="Expresiones"];
+
+<RAIZ> -> id105
+id105
+id105->id106
+id106->id103
+id103->id1771
+id1771[label ="i"];
+id103->id1770
+id103[label ="Declaracion"];
+id1770[label ="5.0"];
+
+id106->id102
+id102[label ="Condicion"];
+id102->id1773
+id1773[label ="0.0"];
+id102->id1772
+id1772[label =">"];
+id102->id1774
+id1774[label ="2.0"];
+
+id1769[label ="--"];
+id106->id1769
+id106[label ="Condicion Ciclo"];
+
+id105->id1768
+id105[label ="For"];
+id1768->id104
+id104->id1780
+id1780[label ="i ="];
+id104->id1781
+id1781[label ="0.0"];
+id104[label ="WRITELINE"];
+
+id1768[label ="Expresiones"];
+
+<RAIZ> -> id108
+id108
+id108->id1783
+id1783[label ="marcos"];
+id108->id1782
+id108[label ="Declaracion"];
+id1782[label ="5.0"];
+
+<RAIZ> -> id116
+id116
+id116->id1784
+id1784->id113
+id113[label = "If"];
+id113->id1854
+id1854->id109
+id109[label ="Condicion"];
+id109->id1867
+id1867[label ="5.0"];
+id109->id1866
+id1866[label =">="];
+id109->id1868
+id1868[label ="1.0"];
+
+id1854->id110
+id110[label ="Condicion"];
+id110->id1881
+id1881[label ="&&"];
+id110->id1879
+id1879[label ="5.0"];
+id110->id1878
+id1878[label ="<"];
+id110->id1880
+id1880[label ="3.0"];
+
+id1854[label = "Condiciones"];
+id113->id1855
+id1855->id111
+id111->id1884
+id1884[label ="true"];
+id111[label ="WRITELINE"];
+
+id1855[label = "Expresiones"];
+id113->id1857
+id1857->id112
+id112->id1887
+id1887[label ="false"];
+id112[label ="WRITELINE"];
+
+id1857[label = "Else"];
+
+id1784->id114->id1892
+id114->id1893
+id114[label="Asignacion"];
+id1892[label="marcos"];
+id1893[label="4.0"];
+
+id1784[label ="Expresiones"];
+id116->id1785
+id1785->id115
+id115[label ="Condicion"];
+id115->id1903
+id1903[label ="4.0"];
+id115->id1902
+id1902[label =">"];
+id115->id1904
+id1904[label ="0.0"];
+
+id1785[label = "While"];
+id116[label ="DO"];
+
+<RAIZ> -> id123
+id123
+id123->id124
+id124->id118
+id118->id1909
+id1909[label ="i"];
+id118->id1908
+id118[label ="Declaracion"];
+id1908[label ="0.0"];
+
+id124->id117
+id117[label ="Condicion"];
+id117->id1911
+id1911[label ="0.0"];
+id117->id1910
+id1910[label ="<"];
+id117->id1912
+id1912[label ="9.0"];
+
+id1907[label ="++"];
+id124->id1907
+id124[label ="Condicion Ciclo"];
+
+id123->id1906
+id123[label ="For"];
+id1906->id121
+id121[label = "If"];
+id121->id1958
+id1958->id119
+id119[label ="Condicion"];
+id119->id1971
+id1971[label ="0.0"];
+id119->id1970
+id1970[label ="=="];
+id119->id1972
+id1972[label ="5.0"];
+
+id1958[label = "Condiciones"];
+id121->id1959
+id1959->id120
+id120->id1978
+id1978[label ="Me salte el numero "];
+id120->id1979
+id1979[label ="0.0"];
+id120[label ="WRITELINE"];
+
+id1959[label = "Expresiones"];
+
+id1906->id122
+id122->id1982
+id1982[label ="0.0"];
+id122[label ="WRITELINE"];
+
+id1906[label ="Expresiones"];
+
+<RAIZ> -> id125
+id125
+id125->id1983
+id1983[label ="\'Ejemplo de
+
+ llamada a método\'"];
+id125[label ="WRITELINE"];
+
+<RAIZ> -> id126
+id126
+
+<RAIZ> -> id129
+id129
+id129->id1986
+id1986[label ="num"];
+id129->id1985
+id129[label ="Declaracion"];
+id1985[label ="null"];
+
+<RAIZ> -> id130
+id130
+id130->id1987
+id1987[label ="El valor de num es: "];
+id130->id1988
+id1988[label ="100"];
+id130[label ="WRITELINE"];
+
+<RAIZ> -> id132
+id132
+id132->id1990
+id1990[label ="_edad_"];
+id132->id1989
+id132[label ="Declaracion"];
+id1989[label ="18.0"];
+
+<RAIZ> -> id134
+id134
+id134->id1992
+id1992[label ="banderaedad"];
+id134->id1991
+id134[label ="Declaracion"];
+id1991[label ="false"];
+
+<RAIZ> -> id135
+id135
+id135->id1993
+id1993[label ="false"];
+id135[label ="WRITELINE"];
+
+<RAIZ> -> id136
+id136
+id136->id1994
+id1994[label ="Resolver esta expresion : "];
+id136->id1995
+id1995[label ="5043.057553956834"];
+id136[label ="WRITELINE"];
+
+<RAIZ> -> id137
+id137
+id137->id1996
+id1996[label ="Hello World!"];
+id137[label ="WRITELINE"];
+
+<RAIZ> -> id138
+id138
+id138->id1997
+id1997[label ="Resolver esta expresion : "];
+id138->id1998
+id1998[label ="5043.057553956834"];
+id138[label ="WRITELINE"];
+
+<RAIZ> -> id139
+id139
+id139->id1999
+id1999[label ="Resolver esta expresion : 5043.057553956834"];
+id139[label ="WRITELINE"];
+
+ }

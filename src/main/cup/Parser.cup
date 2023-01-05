@@ -1,0 +1,598 @@
+package gt.edu.usac.compiler;
+import java_cup.runtime.*;
+import java.util.*;
+import Data.*;
+class MyParser;
+parser code{:
+
+    int tabs = 0;
+    boolean lock = false;
+    StringBuilder salida = new StringBuilder();
+    StringBuilder consoleLog = new StringBuilder();
+    ListaExpresiones lista = new ListaExpresiones();
+    LinkedList<ListaValores> salidas = new LinkedList<>();
+    LinkedList<Declaracion> simbolos = new LinkedList<>();
+    boolean isString = false;
+    LinkedList<String> erroresSemanticos = new LinkedList<>();
+    String temporal;
+    String errorTemporal = "";
+
+/*
+int a = 1;
+a = 4;
+*/
+    public LinkedList<String> getErroresSemanticos(){
+        return erroresSemanticos;
+    }
+    public double leerSimbolos(String nombre) {
+        for (int i = simbolos.size() - 1; i >= 0; i--) {
+            Declaracion temp = simbolos.get(i);
+            if (temp.getNombre() != null && temp.getNombre().equals(nombre)) {
+                if (temp.getValor() != null && temp.getValor().getTipoValor().equalsIgnoreCase("doubleValue")) {
+                    return temp.getValor().getDecimal();
+                } else if (temp.getValor() != null && temp.getValor().getCadena() != null && !temp.getValor().getCadena().isBlank()) {
+                    isString = true;
+                    temporal = temp.getValor().getCadena();
+                    return Double.NEGATIVE_INFINITY;
+                }
+            } else if (temp.getIdentificadores() != null) {
+                for (String identificador : temp.getIdentificadores()) {
+                    if (identificador.equalsIgnoreCase(nombre)) {
+                        if (temp.getValor() != null && temp.getValor().getTipoValor().equalsIgnoreCase("doubleValue")) {
+                            return temp.getValor().getDecimal();
+                        } else if (temp.getValor() != null && temp.getValor().getCadena() != null && !temp.getValor().getCadena().isBlank()) {
+                            isString = true;
+                            temporal = temp.getValor().getCadena();
+                            return Double.NEGATIVE_INFINITY;
+                        }
+                    }
+                }
+                if (i - 1 < 0) {
+                    //significa que no lo encontro
+                    return Double.MIN_VALUE;
+                }
+            }
+        }
+        return Double.MAX_VALUE;
+    }
+    
+    public void asignarValor(String nombre, Valor valor) {
+        for (int i = simbolos.size() - 1; i >= 0; i--) {
+            if (simbolos.get(i).getNombre() != null && simbolos.get(i).getNombre().equals(nombre)) {
+                if (isString) {
+                    simbolos.get(i).setValor(new Valor(temporal, "cadena", 0, 0));
+                } else {
+                    simbolos.get(i).setValor(valor);
+                }
+            } else if (simbolos.get(i).getIdentificadores() != null) {
+                for (String cadena : simbolos.get(i).getIdentificadores()) {
+                    if (cadena.equals(nombre)) {
+                        simbolos.get(i).setValor(valor);
+                    }
+                }
+            }
+        }
+        isString = false;
+        temporal = "";
+    }
+
+    
+
+    Raiz raiz;
+
+    public Raiz getRaiz(){
+        return raiz;
+    }
+
+    public ListaExpresiones getLista(){
+        return lista;
+    }
+
+    public LinkedList<ListaValores> getConsoleLog(){
+        return salidas;
+    }
+
+    public LinkedList<Declaracion> getSimbolos(){
+        return simbolos;
+    }
+    LinkedList<Data.Error> errores = new LinkedList<>();
+    public LinkedList<Data.Error> getErrores(){
+        return errores;
+    }
+    private void addLine(){
+        salida.append("\n");
+    }
+    private void addText(String valor){
+        salida.append(valor);
+    }
+    private void addTabs(){
+        salida.append("\n");
+        for (int i = 0; i < tabs; i++) {
+            salida.append("\t");
+        }
+    }
+        public String getSalida(){
+        String exit = salida.toString();
+        String[] lineas = salida.toString().split("\n");
+        StringBuilder nuevo = new StringBuilder();
+        for (int i = lineas.length-1; i >= 0; i--) {
+            if (!lineas[i].isEmpty()&&!lineas[i].isBlank()) {
+                nuevo.append(lineas[i]).append("\n");
+            }
+        }
+        ArrayList<Integer> cantTabs = contarTabs(nuevo.toString().split("\n"));
+        int maxTabs = maxTabNum(cantTabs);
+        
+        for(Data.Error error:errores){
+            System.out.println(error.toString());
+        }
+
+        Extras.Formatter formatter= new Extras.Formatter();
+        //formatter.Reformat(nuevo.toString().split("\n"), 0, maxTabs, 0, lineas.length, 0);
+        return nuevo.toString();
+    }
+        
+        public void append(Declaracion declaracion){
+            simbolos.add(declaracion);
+            System.out.println("Tamaño de simbolos: "+simbolos.size());
+        }
+  
+       public ArrayList<Integer> contarTabs(String[] lineas){
+        ArrayList<Integer> cantTabs = new ArrayList<>();
+        for (int i = 0; i < lineas.length; i++) {
+            char[] caracteres = lineas[i].toCharArray();
+            int contador = 0;
+            for (int j = 0; j < caracteres.length; j++) {
+                if (caracteres[j] == '\t') {
+                    contador++;
+                }
+            }
+            cantTabs.add(contador);
+            contador = 0;
+        }
+        maxTabNum(cantTabs);
+        System.out.println(cantTabs.toString());
+        return cantTabs;
+    }
+
+    public int maxTabNum(ArrayList<Integer> cantTabs) {
+        int salida = 0;
+        for (int i = 0; i < cantTabs.size(); i++) {
+            if (cantTabs.get(i) > salida) {
+                salida = cantTabs.get(i);
+            }
+        }
+        System.out.println("NUMERO MAXIMO TABS: "+salida);
+        return salida;
+    }
+     public void report_error(String message, Object info) {
+        System.out.println("public void report_error");
+    }
+    
+    public void report_fatal_error(String message, Object info) {
+        System.out.println("public void report_fatal_error");
+    }
+
+    public void syntax_error(Symbol cur_token) {
+        System.out.println("El error es el simbolo: " + MyParserSym.terminalNames[cur_token.sym]);
+        System.out.println(String.format("En la posicion: %d, %d", (cur_token.left+1), cur_token.right));
+        errores.add(new Data.Error(MyParserSym.terminalNames[cur_token.sym], "Sintactico", (cur_token.left+1), cur_token.right));
+    }
+
+    public void custom_syntax_error(String wrong, Symbol cur_token) {
+        System.out.println("El error es el simbolo: " + wrong);
+        System.out.println(String.format("En la posicion: %d, %d", (cur_token.left+1), cur_token.right));
+        errores.add(new Data.Error(wrong, "Sintactico", (cur_token.left+1), cur_token.right));
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token) {
+        errores.add(new Data.Error(MyParserSym.terminalNames[cur_token.sym], "Sintactico irrecuperable", (cur_token.left+1), cur_token.right));
+    }
+:}
+/**Simbolos terminales**/
+terminal PLUS, TIMES, LPAREN, RPAREN, MINUS, DIV, MOD, UMINUS;
+terminal LBRACE, RBRACE, COMMA, VOID,SEMI, ASIGN;
+terminal Double NUMBER;
+terminal FOR;
+terminal INT,LONG,FLOAT,DOUBLE,DECIMAL,STRING;
+terminal CHAR,BOOL, LT, GT, LET, LGT;
+terminal String identifier;
+terminal double doubleValue;
+terminal String stringValue;
+terminal double intValue;
+terminal String charValue;
+terminal String COMENTARIO;
+terminal String MINUS2;
+terminal String ERROR;
+terminal WHILE;
+terminal TRUE;
+terminal FALSE;
+terminal DO;
+terminal ELSE;
+terminal IF;
+terminal NOT;
+terminal AND;
+terminal OR;
+terminal CONTINUE;
+terminal BREAK;
+terminal RETURN;
+terminal MAIN;
+terminal COLON;
+terminal SWITCH;
+terminal DEFAULT;
+terminal CASE;
+terminal CONSOLE;
+terminal DOT;
+terminal WRITE;
+terminal WRITELINE;
+
+
+/**Simbolos no terminales**/
+non terminal Double expr;
+non terminal ListaExpresiones inicio;
+non terminal String tipo;
+non terminal Funcion ids;
+non terminal ListaParametros params;
+non terminal Parametro param;
+non terminal Declaracion declaracion;
+non terminal Llamada llamada;
+non terminal ListaValores atributos;
+non terminal ListaValores consoleInside;
+non terminal Expresion sentencia;
+non terminal Valor valor;
+non terminal Asignacion asignacion;
+non terminal String tipoFun;
+non terminal For for;
+non terminal String forVariation;
+non terminal DeclaracionFor declaracionFor;
+non terminal While while;
+non terminal Condicion condicion;
+non terminal Valor valorCondicion;
+non terminal String signoCondicion;
+non terminal ListaExpresiones sentencias;
+non terminal DoWhile do;
+non terminal If if;
+non terminal Condicion condicionIf;
+non terminal ListaCondiciones condicionCompleta;
+non terminal String signoLogico;
+non terminal Expresion sentenciaCiclo;
+non terminal ListaExpresiones sentenciasCiclo;
+non terminal ListaCasos multiCase;
+non terminal Switch switch;
+non terminal ListaString identifiers;
+non terminal ConsoleLog console;
+non terminal  llaveApertura;
+non terminal  llaveCierre;
+non terminal ListaExpresiones funciones;
+
+
+
+
+/*Precedencia*/
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV, MOD;
+precedence left UMINUS;
+
+start with inicio;
+
+inicio::= sentenciasCiclo:f {:lista = f;raiz = new Raiz(f); RESULT = f;:}
+//|sentencias:s {:RESULT = getSalida();:}
+//|expr:e {:RESULT = e+"";:}
+|error LBRACE
+;
+funciones::=ids:s {:RESULT = new ListaExpresiones().append((Funcion)s);:}
+|funciones:f ids:i {:RESULT = f.append((Funcion)i);:}
+|declaracion:s {:RESULT = new ListaExpresiones().append((Declaracion)s);:}
+|funciones:f declaracion:d {:RESULT = f.append((Declaracion)d);:}
+|asignacion:a SEMI{:RESULT = new ListaExpresiones().append((Asignacion)a);:}
+|funciones:f asignacion:a {:RESULT = f.append((Asignacion)a);:}
+;
+
+sentenciasCiclo::=sentenciaCiclo:s{:RESULT = new ListaExpresiones().append(s);:}
+|sentenciasCiclo:ss sentenciaCiclo:s {:RESULT = ss.append(s);:} 
+;
+
+sentenciaCiclo::= sentencia:s {:RESULT = s;:}
+|BREAK SEMI{:BreakContinue sentencia = new BreakContinue();RESULT =sentencia.setFreno(true);:}
+|CONTINUE SEMI{:BreakContinue sentencia = new BreakContinue();RESULT =sentencia.setContinuar(true);:}
+;
+
+sentencias::= sentencia:s {:RESULT = new ListaExpresiones().append(s);:}
+|sentencias:ss sentencia:s {:RESULT = ss.append(s);:}
+;
+
+sentencia::=if:s {:System.out.println(s.toString());RESULT = s;:}//necesita revision
+|ids:i {:RESULT = i;:}
+|do:s {:RESULT = s;:}//necesita revision
+|while:s {:RESULT = s;:}//necesita revision
+|for:s {:RESULT = s;:}//necesita revision
+|switch:s {:RESULT = s;:}//necesita revision
+|asignacion:s {:RESULT = s;:}//necesita revision 
+|declaracion:s {:RESULT = s;:}
+//necesita revision
+|console:s {:RESULT = s;:}//en proceso #1
+|llamada:l SEMI {:RESULT = l;:}
+|RETURN valor:v SEMI {:RESULT = new Return(v, (cur_token.left+1), cur_token.right);:}
+|RETURN identifier:i SEMI {:RESULT = new Return(new Valor(i,"IDENTIFICADOR",(cur_token.left+1), cur_token.right), (cur_token.left+1), cur_token.right);:}
+|RETURN SEMI {:RESULT = new Return((cur_token.left+1), cur_token.right);:}
+|RETURN llamada:i {:RESULT = new Return(new Valor(i,"LLAMADA",(cur_token.left+1), cur_token.right),(cur_token.left+1), cur_token.right);:}
+|ERROR:e {:custom_syntax_error(e,cur_token);:}
+|error sentenciaCiclo
+;
+
+
+console::= CONSOLE DOT WRITE LPAREN consoleInside:c RPAREN SEMI{:System.out.println("VALOR DE CONSOLA"+c.toString());salidas.add(c);RESULT = new ConsoleLog(c,(cur_token.left+1),cur_token.right);:} //En proceso #1
+|WRITELINE LPAREN consoleInside:c RPAREN SEMI{:System.out.println("VALOR DE CONSOLA"+c.toString());salidas.add(c);RESULT = new ConsoleLog(c,(cur_token.left+1),cur_token.right);:} 
+;
+
+
+/******INTERIOR DE CONSOLE.WRITE*****/
+consoleInside::=//identifier:i {:RESULT = new ListaValores().append(new Valor(i,"IDENTIFICADOR",(cur_token.left+1),cur_token.right));:}//PENDIENTE
+valor:v {:System.out.println("VALOR ENCONTRADO EN CONSOLE"+v.toString());RESULT = new ListaValores().append(v);:}
+//|consoleInside:a PLUS identifier:i {:RESULT = a.append(new Valor(i,"IDENTIFICADOR",(cur_token.left+1),cur_token.right));:}
+|consoleInside:a PLUS valor:v {:System.out.println("VALOR ENCONTRADO EN CONSOLE"+v.toString());RESULT = a.append(v);:}
+;
+
+if::=IF LPAREN condicionCompleta:c RPAREN llaveApertura sentenciasCiclo:s llaveCierre 
+{:RESULT = new If(c,s,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura sentenciasCiclo:s llaveCierre ELSE if:e 
+{:RESULT = new If(c,s,e,false,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura sentenciasCiclo:s llaveCierre ELSE llaveApertura sentenciasCiclo:s2 llaveCierre 
+{:RESULT = new If(c,s,s2,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura llaveCierre 
+{:RESULT = new If(c,null,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura llaveCierre ELSE if:e 
+{:RESULT = new If(c,null,e,false,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura llaveCierre ELSE llaveApertura sentenciasCiclo:s2 llaveCierre
+{:RESULT = new If(c,null,s2,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura sentenciasCiclo:s llaveCierre ELSE llaveApertura llaveCierre
+{:RESULT = new If(c,s,null,(cur_token.left+1),cur_token.right);:}
+|IF LPAREN condicionCompleta:c RPAREN llaveApertura llaveCierre ELSE llaveApertura llaveCierre
+{:RESULT = new If(c,null,null,(cur_token.left+1),cur_token.right);:}
+;
+
+
+do::= DO llaveApertura sentencias:s llaveCierre  WHILE LPAREN condicionCompleta:c RPAREN SEMI 
+{:RESULT = new DoWhile(s,c,(cur_token.left+1),cur_token.right);:}
+|DO llaveApertura llaveCierre  WHILE LPAREN condicionCompleta:c RPAREN SEMI
+{:RESULT = new DoWhile(null,c,(cur_token.left+1),cur_token.right);:}
+;
+//********WHILE**********
+while::= WHILE LPAREN condicionCompleta:c RPAREN llaveApertura sentenciasCiclo:s llaveCierre 
+{:RESULT = new While(s,c,(cur_token.left+1),cur_token.right);:}
+|WHILE LPAREN condicionCompleta:c RPAREN llaveApertura  llaveCierre
+{:addText("while "+c+" :");:}
+;
+
+condicionCompleta ::= condicionIf:c {:RESULT= new ListaCondiciones().append(c);:}
+|condicionCompleta:c1 signoLogico:s condicionIf:c2 
+{:c2.setSignoLogico(s);RESULT = c1.append(c2);:}
+|LPAREN condicionCompleta:c1 RPAREN {:RESULT = c1;:}
+;
+
+condicionIf::=condicion:c {:RESULT = c;:}
+//|identifier:i {:RESULT =new Condicion(i,false,(cur_token.left+1), cur_token.right);:}
+|NOT condicionIf:i {:RESULT =i;:}
+;
+
+
+condicion::= valorCondicion:v1 signoCondicion:s valorCondicion:v2 
+{:RESULT = new Condicion(s,v1,v2,(cur_token.left+1),cur_token.right);:}
+|TRUE  {:RESULT =new Condicion("TRUE",false,(cur_token.left+1), cur_token.right);:} 
+|FALSE {:RESULT =new Condicion("FALSE",false,(cur_token.left+1), cur_token.right);:}
+;
+
+valorCondicion::= //identifier:i {:RESULT = new Valor(i,"IDENTIFICADOR",(cur_token.left+1),cur_token.right);:}//En proceso #2
+valor:v  {:RESULT = v;:}//En proceso #2
+|llamada:l {:RESULT = new Valor(l,"LLAMADA",(cur_token.left+1),cur_token.right);:}//En proceso #3
+;
+
+signoLogico::=AND AND{:RESULT = "&&";:}
+|OR OR{:RESULT = "||";:}
+;
+
+signoCondicion::=LT {:RESULT = "<";:}
+|GT {:RESULT = ">";:}
+|LET {:RESULT = "<=";:}
+|LGT {:RESULT = ">=";:}
+|ASIGN ASIGN {:RESULT = "==";:}
+|NOT ASIGN {:RESULT = "!=";:}
+;
+//********FOR**********
+for::=FOR LPAREN declaracionFor:de RPAREN llaveApertura sentenciasCiclo:s llaveCierre
+{:RESULT = new For(de,s,(cur_token.left+1),cur_token.right);:}
+|FOR LPAREN declaracionFor:de RPAREN llaveApertura  llaveCierre
+{:RESULT = new For(de,null,(cur_token.left+1),cur_token.right);:}
+;
+
+declaracionFor::= tipo:t identifier:i ASIGN valor:v SEMI condicion:c SEMI identifier:i3 forVariation:v3 
+{:RESULT = new DeclaracionFor(new Declaracion(t,(i),v,(cur_token.left+1),cur_token.right),c,v3);:}
+|identifier:i ASIGN valor:v SEMI condicion:c SEMI condicion:a forVariation:v3
+{:RESULT = new DeclaracionFor(new Declaracion(null,(i),v,(cur_token.left+1),cur_token.right),a,v3);:}
+;
+
+forVariation::= PLUS PLUS {:RESULT = "++";:}
+|MINUS MINUS {:RESULT = "--";:}
+;
+//********SWITCH**************
+
+switch::= SWITCH LPAREN identifier:i RPAREN llaveApertura multiCase:m DEFAULT COLON sentencias:s BREAK SEMI llaveCierre
+{:RESULT = new Switch(i, m, s,(cur_token.left+1),cur_token.right);:}
+|SWITCH LPAREN identifier:i RPAREN llaveApertura multiCase:m DEFAULT COLON sentencias:s llaveCierre
+{:RESULT = new Switch(i, m, s,(cur_token.left+1),cur_token.right);:}
+;
+
+
+//PENDIENTE DE COMPROBAR
+multiCase::=multiCase:m CASE valorCondicion:v COLON sentencias:s BREAK SEMI 
+{:RESULT = m.append(new Case(v,s,true,(cur_token.left+1),cur_token.right));:}
+|multiCase:m CASE valorCondicion:v COLON sentencias:s  
+{:RESULT = m.append(new Case(v,s,false,(cur_token.left+1),cur_token.right));:}
+|CASE valorCondicion:v COLON sentencias:s BREAK SEMI
+{:RESULT = new ListaCasos().append(new Case(v,s,true,(cur_token.left+1),cur_token.right));:}
+|CASE valorCondicion:v COLON sentencias:s 
+{:RESULT = new ListaCasos().append(new Case(v,s,false,(cur_token.left+1),cur_token.right));:}
+;
+
+
+//********ASIGNACION**********
+asignacion::=identifier:i ASIGN valor:v SEMI
+{:asignarValor(i,v);RESULT = new Asignacion(i,v,(cur_token.left+1),cur_token.right);:}
+|identifier:i PLUS PLUS SEMI{:
+                            double res = leerSimbolos(i);
+                            Asignacion tempAsign;
+                            if(res!=Double.MAX_VALUE && res!=Double.MIN_VALUE && res!= Double.NEGATIVE_INFINITY){
+                                Valor nuevo = new Valor(res+1,cur_token.left+1,cur_token.right,false);
+                                asignarValor(i,nuevo);
+                                tempAsign = new Asignacion(i,nuevo,"++",(cur_token.left+1),cur_token.right);
+                            }else{
+                                tempAsign = new Asignacion(i,null,"++",(cur_token.left+1),cur_token.right);
+                            }RESULT = tempAsign;:}
+|identifier:i MINUS MINUS  SEMI{:
+                            double res = leerSimbolos(i);
+                            Asignacion tempAsign;
+                            if(res!=Double.MAX_VALUE && res!=Double.MIN_VALUE && res!= Double.NEGATIVE_INFINITY){
+                                Valor nuevo =new Valor(res-1,cur_token.left+1,cur_token.right,false);
+                                asignarValor(i,nuevo);
+                                tempAsign = new Asignacion(i,nuevo,"--",(cur_token.left+1),cur_token.right);
+                            }else{
+                                tempAsign = new Asignacion(i,null,"--",(cur_token.left+1),cur_token.right);
+                            }RESULT = tempAsign;:}
+|identifier:i ASIGN llamada:l SEMI{:RESULT = new Asignacion(i,l,(cur_token.left+1), cur_token.right);:}
+;
+
+//********DECLARACION**********
+declaracion::=tipo:t identifiers:is SEMI
+ {:append(new Declaracion(t,is,null, (cur_token.left+1),cur_token.right));RESULT = new Declaracion(t,is,null, (cur_token.left+1),cur_token.right);:}
+|tipo:t identifiers:i ASIGN valorCondicion:v SEMI
+ {:append(new Declaracion(t,i,v, (cur_token.left+1),cur_token.right));RESULT =new Declaracion(t,i,v, (cur_token.left+1),cur_token.right);:}
+;
+
+identifiers::= identifier:i {:RESULT = new ListaString().append(i);:} 
+|identifiers:is COMMA identifier:i {:RESULT = is.append(i);:} 
+;
+
+//********LLAMADA**********
+llamada::=identifier:i LPAREN RPAREN {:RESULT = new Llamada(i,null,(cur_token.left+1), cur_token.right);:}////listo en java
+|identifier:i LPAREN atributos:a RPAREN {:RESULT = new Llamada(i,a,(cur_token.left+1),cur_token.right);:}////listo en java
+;
+
+//********ATRIBUTOS**********
+//Devuelve lista de valores
+atributos::=//identifier:i {:RESULT = new ListaValores().append(new Valor(i,"IDENTIFICADOR",(cur_token.left+1),cur_token.right));:}//PENDIENTE
+valor:v {:RESULT = new ListaValores().append(v);:}
+//|atributos:a COMMA identifier:i {:RESULT = a.append(new Valor(i,"IDENTIFICADOR",(cur_token.left+1),cur_token.right));:}
+|atributos:a COMMA valor:v {:RESULT = a.append(v);:}
+;
+
+
+
+params::= param:p {:RESULT = new ListaParametros().append(p);:}
+|params:list COMMA param:p {:RESULT = list.append(p);:}
+;
+
+param::= tipo:tip identifier:nomb
+{:append(new Declaracion(tip, nomb,null,(cur_token.left+1),cur_token.right));
+RESULT = new Parametro(nomb,tip,(cur_token.left+1),cur_token.right);:}
+;
+
+//********FUNCION**********
+ids::= tipo:t identifier:i LPAREN RPAREN llaveApertura  sentencias:s llaveCierre
+{:append( new Declaracion(t,(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion(t,i,null,s,(cur_token.left+1),cur_token.right);:}
+|tipo:t identifier:i LPAREN params:p RPAREN llaveApertura sentencias:s llaveCierre//{:System.out.println(i+"  "+t);RESULT=i+"  "+t;:}
+{:append(new Declaracion(t,(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion(t,i,p,s,(cur_token.left+1),cur_token.right);:}
+|VOID identifier:i LPAREN  RPAREN llaveApertura sentencias:s llaveCierre//{:System.out.println(t);RESULT=t;:}
+{:append(new Declaracion("void",(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion("VOID",i,null,s,(cur_token.left+1),cur_token.right);:}
+|VOID identifier:i LPAREN params:p RPAREN llaveApertura  sentencias:s llaveCierre//{:System.out.println(t);RESULT=t;:}
+{:append(new Declaracion("void",(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion("VOID",i,p,s,(cur_token.left+1),cur_token.right);:}
+|tipo:t identifier:i LPAREN RPAREN llaveApertura   llaveCierre//{:System.out.println(i+"  "+t);RESULT=i+"  "+t;:}
+{:append(new Declaracion(t,(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion(t,i,null,null,(cur_token.left+1),cur_token.right);:}
+|tipo:t identifier:i LPAREN params:p RPAREN llaveApertura  llaveCierre//{:System.out.println(i+"  "+t);RESULT=i+"  "+t;:}
+{:append(new Declaracion(t,(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion(t,i,p,null,(cur_token.left+1),cur_token.right);:}
+|VOID identifier:i LPAREN  RPAREN llaveApertura  llaveCierre//{:System.out.println(t);RESULT=t;:}
+{:append(new Declaracion("void",(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion("VOID",i,null,null,(cur_token.left+1),cur_token.right);:}
+|VOID identifier:i LPAREN params:p RPAREN llaveApertura   llaveCierre//{:System.out.println(t);RESULT=t;:}
+{:append(new Declaracion("void",(i),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion("VOID",i,p,null,(cur_token.left+1),cur_token.right);:}
+|VOID MAIN LPAREN RPAREN llaveApertura  sentencias:s llaveCierre
+{:append(new Declaracion("void",("main"),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion("VOID","main",null,s,(cur_token.left+1),cur_token.right);:}
+|VOID MAIN LPAREN RPAREN llaveApertura llaveCierre
+{:append(new Declaracion("void",("main"),null, (cur_token.left+1),cur_token.right));RESULT = new Funcion("VOID","main",null,null,(cur_token.left+1),cur_token.right);:}
+|error SEMI
+;
+
+llaveApertura::=LBRACE{:tabs++; addTabs();:};
+llaveCierre::=RBRACE{:tabs--; addTabs();:};
+
+
+//********EXPRESION**********
+expr      ::= expr:e1 PLUS expr:e2    
+	      {: RESULT = new Double(e1 + e2); :} 
+	      | expr:e1 MINUS expr:e2    {: RESULT = new Double(e1 - e2); :} 
+	      | expr:e1 TIMES expr:e2 {: RESULT = new Double(e1 * e2); :} 
+	      | expr:e1 DIV expr:e2 {: RESULT = new Double(e1 / e2); :} 
+	      | expr:e1 MOD expr:e2 {: RESULT = new Double(e1 % e2); :} 
+	      | doubleValue:n {: RESULT = n; :}
+	      | intValue:n {: RESULT = new Double(n); :}
+          | charValue:c {:
+            char r = c.charAt(0);
+            double res = r;
+            RESULT = res;
+          :}  
+	      | MINUS expr:e{: RESULT = new Double(0 - e); :}
+          | identifier:i {:
+            double resultado = leerSimbolos(i);
+            if(resultado == Double.MAX_VALUE){
+                resultado = 0;
+                System.out.println(resultado+" NO ENCONTRE VALOR");
+                
+            }else if(resultado == Double.MIN_VALUE){
+                System.out.println("Simbolo no encontrado "+i);
+                erroresSemanticos.add("Simbolo no encontrado "+i+" En posicion: "+(cur_token.left+1)+" "+(cur_token.right));
+                resultado = 0;
+            }else if(resultado == Double.NEGATIVE_INFINITY){
+                System.out.println("Soy String "+temporal);
+                resultado = 0;
+            }
+            else{
+                System.out.println(resultado+" SI TENGO VALOR");
+            }
+            RESULT = resultado;
+          :} 
+          %prec UMINUS
+	      | LPAREN expr:e RPAREN{: RESULT = e; :} 
+	      ;
+          
+
+         
+valor::= //NUMBER:n {:RESULT = new Valor(n,(cur_token.left+1),cur_token.right,false);:}//listo en java
+    expr:e{:System.out.println("Valor retornado por expresion"+e);
+    Valor temp;
+    if(isString){
+        temp = new Valor(temporal,"stringValue",(cur_token.left+1),cur_token.right);
+        isString=false;
+    }else{
+        temp = new Valor(e,(cur_token.left+1),cur_token.right,true);
+    }
+    RESULT = temp;:}//listo en java
+    //|charValue:c {:RESULT = new Valor(c,"charValue",(cur_token.left+1),cur_token.right);:}//listo en java
+    |stringValue:s {:RESULT = new Valor(s,"stringValue",(cur_token.left+1),cur_token.right);:}//listo en java
+    |TRUE {:RESULT = new Valor("true","TRUE",(cur_token.left+1),cur_token.right);:}//listo en java
+    |FALSE {:RESULT = new Valor("false","FALSE",(cur_token.left+1),cur_token.right);:}//listo en java
+;
+
+
+
+
+/*NECESITA PRUEBA*/
+tipo::=INT {:System.out.println("INT");RESULT = "INT";:}
+    |LONG   {:System.out.println("LONG");RESULT ="LONG";:}
+    |FLOAT  {:System.out.println("FLOAT");RESULT ="FLOAT";:}
+    |DOUBLE {:System.out.println("DOUBLE");RESULT ="DOUBLE";:}
+    |DECIMAL{:System.out.println("DECIMAL");RESULT ="DECIMAL";:} 
+    |STRING {:System.out.println("STRING");RESULT ="STRING";:}
+    |CHAR   {:System.out.println("CHAR");RESULT ="CHAR";:}
+    |BOOL   {:System.out.println("BOOL");RESULT ="BOOL";:}
+    |identifier:i {:System.out.println(i); RESULT = i;:}
+;
+
+
