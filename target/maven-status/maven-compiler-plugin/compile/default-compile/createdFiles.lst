@@ -33,7 +33,6 @@ gt\edu\usac\compiler\MainFrame$4.class
 Data\Raiz.class
 gt\edu\usac\compiler\MainFrame$7.class
 Data\DoWhile.class
-gt\edu\usac\compiler\Token.class
 gt\edu\usac\compiler\MyLexer.class
 gt\edu\usac\compiler\MainFrame.class
 gt\edu\usac\compiler\MyParser$CUP$MyParser$actions.class

@@ -73,24 +73,23 @@ public class Valor {
     @Override
     public String toString() {
         switch (tipoValor) {//PENDIENTE METODO PARA BUSCAR VALOR DE VARIABLE
-            case "stringValue" -> {
+            case "stringValue": {
                 if (cadena != null) {
                     return cadena;
                 }
             }
-            case "doubleValue" -> {
+            case "doubleValue" :{
                 return decimal + "";
             }
 
-            case "intValue" -> {
+            case "intValue": {
                 return (int) decimal + "";
             }
-            default -> {
+            default: {
                 return cadena;
             }
         }
         //PENDIENTE METODO PARA BUSCAR VALOR DE VARIABLE
-        return "Tipo invalido: " + tipoValor;
     }
 
 }
